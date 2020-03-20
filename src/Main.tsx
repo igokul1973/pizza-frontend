@@ -13,7 +13,7 @@ const Main: React.FC<{}> = () => {
 
     return (
         <Switch>
-            <Route exact path='/' component={Front} />
+            <Route path='/' component={Front} />
         </Switch>
     )
 }
