@@ -8,7 +8,6 @@ import {
     IconButton,
     InputBase,
     Badge,
-    Typography,
     SwipeableDrawer,
     List,
     ListItem,
@@ -24,7 +23,6 @@ import MoreIcon from '@material-ui/icons/More';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import { AccountCircle } from '@material-ui/icons';
 import MenuNavLink from '../../components/menuNavLink/MenuNavLink';
-import { NavLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

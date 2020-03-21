@@ -54,7 +54,7 @@ const ImageGallery: React.FC<IProps> = ({ galleryItems }) => {
                 {galleryItems.map(item => {
                     return (
                         <div key={item.index} className={classes.imgRoot}>
-                            <img className={classes.img} alt={''} src={item.src} />
+                            <img className={classes.img} alt="" src={item.src} />
                         </div>
                     )
                 })}

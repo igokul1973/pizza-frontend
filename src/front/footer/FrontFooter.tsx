@@ -1,20 +1,15 @@
 import React from 'react';
 import clsx from 'clsx';
-import { AppBar, CssBaseline, Toolbar, IconButton, Badge, Link, Hidden } from '@material-ui/core';
-import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
+import { AppBar, CssBaseline, Toolbar, Link, Hidden } from '@material-ui/core';
 import MenuNavLink from '../../components/menuNavLink/MenuNavLink';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { AccountCircle } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            flexGrow: 1
+            flexGrow: 1,
         },
         appBar: {
-            top: 'auto',
-            bottom: 0,
-            zIndex: theme.zIndex.drawer + 1,
             width: '100%',
             transition: theme.transitions.create(['width', 'margin'], {
                 easing: theme.transitions.easing.sharp,
@@ -45,7 +40,7 @@ const FrontFooter: React.FC<{}> = () => {
             <CssBaseline />
             <AppBar
                 component="nav"
-                position="fixed"
+                position="static"
                 className={clsx(classes.appBar)}
             >
                 <Toolbar classes={{

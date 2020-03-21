@@ -13,6 +13,7 @@ import LoginForm from './login/LoginForm';
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
+            minHeight: `calc(100vh - 128px)`,
             marginTop: 64,
             padding: '2rem 2rem'
         }

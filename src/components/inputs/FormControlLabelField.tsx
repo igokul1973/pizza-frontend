@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { FormControlLabel, makeStyles, FormControlLabelProps, CheckboxProps, RadioProps } from '@material-ui/core';
 
 import { useField, FieldInputProps } from 'formik';
@@ -35,14 +35,14 @@ const FormControlLabelField: React.FC<TProps> = ({
     const classes = useStyles({});
     const control = (
         <Component
-            className={classNames(classes.input, inputClass)}
+            className={clsx(classes.input, inputClass)}
         />
     );
     return (
         <FormControlLabel
             control={control}
             label={label}
-            className={classNames(classes.label, labelClass)}
+            className={clsx(classes.label, labelClass)}
             {...field}
             {...props}
         />
