@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
-import { BrowserRouter } from "react-router-dom";
 import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
 import "@fortawesome/fontawesome-free/scss/brands.scss";
 import "@fortawesome/fontawesome-free/scss/regular.scss";
@@ -11,12 +10,8 @@ import "./index.scss";
 import * as serviceWorker from "./serviceWorker";
 import { ErrorResponse } from "apollo-link-error";
 import ApolloClient, { InMemoryCache } from "apollo-boost";
-import Main from "./Main";
-import { ApolloProvider } from "@apollo/react-hooks";
 import defaultClientState from "./graphql/defaultClientState";
-import baseTheme from './baseTheme';
-import { ThemeProvider } from '@material-ui/core/styles'
-import { CssBaseline } from "@material-ui/core";
+import App from './App';
 
 const cache = new InMemoryCache({
     cacheRedirects: {
@@ -61,25 +56,11 @@ client.onResetStore(async () => {
 
 toast.configure();
 
-const App: React.FC<{}> = () => {
-
-    return (
-        <ApolloProvider client={client}>
-            <BrowserRouter>
-                <ThemeProvider theme={baseTheme}>
-                    <CssBaseline />
-                    <Main />
-                </ThemeProvider>
-            </BrowserRouter>
-        </ApolloProvider >
-    );
-}
-
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App client={client} />, document.getElementById("root"));
 
 if ((module as any).hot && process.env.NODE_ENV !== "production") {
     (module as any).hot.accept("./Main", () => {
-        ReactDOM.render(<App />, document.getElementById("root"));
+        ReactDOM.render(<App client={client} />, document.getElementById("root"));
     });
 }
 

@@ -9,13 +9,24 @@ export const GET_PRODUCTS = gql`
 				name
 			}
 			createdAt {
-				...DateTimePart
+				year
+				month
+				day
+				hour
+				minute
+				second
+				formatted
 			}
 			updatedAt {
-				...DateTimePart
+				year
+				month
+				day
+				hour
+				minute
+				second
+				formatted
 			}
 		}
 	}
 	${fragments.productPart}
-	${fragments.DateTimePart}
 `;

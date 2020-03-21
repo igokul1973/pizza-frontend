@@ -1,26 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Main from "./Main";
+import { ApolloProvider } from "@apollo/react-hooks";
+import ApolloClient from "apollo-boost";
+import { BrowserRouter } from "react-router-dom";
+import baseTheme from './baseTheme';
+import { ThemeProvider } from '@material-ui/core/styles'
+import { CssBaseline } from "@material-ui/core";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface IProps {
+    client: ApolloClient<any>
+}
+
+const App: React.FC<IProps> = ({ client }) => {
+
+    return (
+        <ApolloProvider client={client}>
+            <BrowserRouter>
+                <ThemeProvider theme={baseTheme}>
+                    <CssBaseline />
+                    <Main />
+                </ThemeProvider>
+            </BrowserRouter>
+        </ApolloProvider >
+    );
 }
 
 export default App;
