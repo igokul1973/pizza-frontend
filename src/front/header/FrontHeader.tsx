@@ -34,9 +34,6 @@ const useStyles = makeStyles((theme: Theme) =>
         appBar: {
             zIndex: theme.zIndex.drawer + 1,
             width: '100%',
-            [theme.breakpoints.up('lg')]: {
-                width: `calc(100% - ${theme.spacing(9) + 1}px)`,
-            },
             transition: theme.transitions.create(['width', 'margin'], {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
@@ -199,6 +196,7 @@ const DashboardHeader: React.FC<{}> = () => {
                         { to: '/login', text: 'View Order History', Icon: HistoryIcon },
                     ].map(({ to, text, Icon }) => (
                         <MenuNavLink
+                            key={to}
                             to={to}
                             className={drawerClasses.link}
                             activeClassName="activeVerticalMenuItem"

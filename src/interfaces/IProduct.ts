@@ -11,4 +11,5 @@ export default interface IProduct extends IDateTime {
 	description: string;
 	price: number;
 	status: ProductStatusEnum;
+	imgUrl: string;
 }

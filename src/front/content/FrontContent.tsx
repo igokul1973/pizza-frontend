@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             marginTop: 64,
-            padding: '1rem 2rem'
+            padding: '2rem 2rem'
         }
     })
 );

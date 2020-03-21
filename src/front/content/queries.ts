@@ -1,4 +1,4 @@
-import fragments from "../../../graphql/fragments";
+import fragments from "../../graphql/fragments";
 import gql from "graphql-tag";
 
 export const GET_PRODUCTS = gql`

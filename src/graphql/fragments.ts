@@ -15,6 +15,7 @@ const fragments = {
 			description
 			price
 			status
+			imgUrl
 		}
 	`,
 	companyProfilePart: gql`
