@@ -66,7 +66,7 @@ const PizzaMenu: React.FC<{}> = () => {
                             {
                                 getProductsByCategory(products, category).map(product => (
                                     <Grid item key={product.name}>
-                                        <Link to="/menu">
+                                        <Link to={`/menu/${product.id}`}>
                                             <MenuCard
                                                 name={product.name}
                                                 description={product.description}

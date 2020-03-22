@@ -55,7 +55,8 @@ let baseTheme = createMuiTheme({
 		MuiLink: {
 			underlineHover: {
 				"&:hover": {
-					textDecoration: "none"
+					textDecoration: "none",
+					cursor: "pointer"
 				}
 			}
 		}

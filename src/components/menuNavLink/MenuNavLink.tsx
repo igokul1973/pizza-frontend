@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link, MuiLinkProps } from '@material-ui/core';
-import { Link as RouterLink, NavLinkProps, } from 'react-router-dom';
-import clsx from 'clsx';
+import { Link, LinkProps } from '@material-ui/core';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const useLinkStyles = makeStyles((theme: Theme) =>
@@ -23,36 +22,37 @@ const useTypographyStyles = makeStyles((theme: Theme) =>
 );
 
 interface IProps extends NavLinkProps {
-    muiLinkProps?: MuiLinkProps
+    muiLinkProps?: LinkProps
 }
 
-const MenuNavLink: React.FC<IProps> = ({ children, ...otherProps }) => {
+const MenuNavLink: React.FC<IProps> = ({ children, muiLinkProps, ...otherProps }) => {
 
     const linkClasses = useLinkStyles();
     const typographyClasses = useTypographyStyles();
 
-    const NavLinkRef = React.forwardRef<any, IProps>((props, ref) => (
-        <Link
+    const NavLinkRef = React.forwardRef<any, Partial<IProps>>((props, ref) => (
+        <NavLink
             ref={ref}
-            children={children}
-            classes={{
-                root: linkClasses.root
-            }}
-            className={props.muiLinkProps && props.muiLinkProps.className}
-            TypographyClasses={{
-                colorPrimary: typographyClasses.colorPrimary
-            }}
-            {...props.muiLinkProps}
-        />
-    ));
-
-    return (
-        <RouterLink
-            component={NavLinkRef}
+            {...props}
             {...otherProps}
         >
             {children}
-        </RouterLink>
+        </NavLink>
+    ));
+
+    return (
+        <Link
+            children={children}
+            component={NavLinkRef}
+            TypographyClasses={{
+                colorPrimary: typographyClasses.colorPrimary
+            }}
+            classes={{
+                root: linkClasses.root
+            }}
+            className={muiLinkProps && muiLinkProps.className}
+            {...muiLinkProps}
+        />
     )
 }
 

@@ -59,14 +59,14 @@ const FrontFooter: React.FC<{}> = () => {
                             </MenuNavLink>
                         </Hidden>
                         <Hidden mdUp implementation="js">
-                            <Link href="https://innoscripta.com/" variant="body1" style={{ color: 'white' }}>
+                            <Link href="https://innoscripta.com/" variant="body1">
                                 Created for Innoscripta GMBH &#9400; 2020
                             </Link>
                         </Hidden>
                     </div>
                 </Toolbar>
             </AppBar>
-        </div>
+        </div >
     );
 }
 

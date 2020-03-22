@@ -9,6 +9,7 @@ import Contact from './contact/Contact';
 import ShoppingCart from './shoppingCart/ShoppingCart';
 import Home from './home/Home';
 import LoginForm from './login/LoginForm';
+import Product from './menu/product/Product';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -27,6 +28,7 @@ const FrontContent: React.FC<{}> = () => {
         <main className={clsx('front-content-component', classes.root)}>
             <Switch>
                 <Route exact path='/' component={Home} />
+                <Route path='/menu/:id' component={Product} />
                 <Route path='/menu' component={PizzaMenu} />
                 <Route path='/about-us' component={AboutUs} />
                 <Route path='/contact' component={Contact} />

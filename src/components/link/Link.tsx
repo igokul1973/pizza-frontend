@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link as MuiLink, MuiLinkProps } from '@material-ui/core';
-import { Link as RouterLink, RouterLinkProps, } from 'react-router-dom';
+import { Link as MuiLink, LinkProps } from '@material-ui/core';
+import { Link as RouterLink, LinkProps as RouterLinkProps, } from 'react-router-dom';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const useLinkStyles = makeStyles((theme: Theme) =>
@@ -13,44 +13,34 @@ const useLinkStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const useTypographyStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        colorPrimary: {
-            color: theme.palette.common.white
-        }
-    })
-);
-
 interface IProps extends RouterLinkProps {
-    muiLinkProps?: MuiLinkProps
+    muiLinkProps?: LinkProps
 }
 
-const Link: React.FC<IProps> = ({ children, ...otherProps }) => {
+const Link: React.FC<IProps> = ({ children, muiLinkProps, ...otherProps }) => {
 
     const linkClasses = useLinkStyles();
-    const typographyClasses = useTypographyStyles();
 
-    const LinkRef = React.forwardRef<any, IProps>((props, ref) => (
-        <MuiLink
-            ref={ref}
-            children={children}
-            classes={{
-                root: linkClasses.root
-            }}
-            className={props.muiLinkProps && props.muiLinkProps.className}
-            TypographyClasses={{
-                colorPrimary: typographyClasses.colorPrimary
-            }}
-            {...props.muiLinkProps} />
-    ));
-
-    return (
+    const LinkRef = React.forwardRef<any, Partial<IProps>>((props, ref) => (
         <RouterLink
-            component={LinkRef}
+            ref={ref}
+            {...props}
             {...otherProps}
         >
             {children}
         </RouterLink>
+    ));
+
+    return (
+        <MuiLink
+            children={children}
+            component={LinkRef}
+            classes={{
+                root: linkClasses.root
+            }}
+            className={muiLinkProps && muiLinkProps.className}
+            {...muiLinkProps}
+        />
     )
 }
 

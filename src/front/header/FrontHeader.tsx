@@ -134,7 +134,9 @@ const useDrawerStyles = makeStyles((theme: Theme) =>
         },
         link: {
             display: 'block',
-            borderBottom: '1px white solid'
+            borderBottom: '1px white solid',
+            color: theme.palette.common.white,
+            textDecoration: 'none'
         },
         listItemIconRoot: {
             color: 'inherit',
@@ -196,8 +198,9 @@ const DashboardHeader: React.FC<{}> = () => {
                         <MenuNavLink
                             key={to}
                             to={to}
-                            className={drawerClasses.link}
+                            muiLinkProps={{ variant: 'h5' }}
                             activeClassName="activeVerticalMenuItem"
+                            className={drawerClasses.link}
                             onClick={toggleMobileMenu()}
                         >
                             <ListItem>
@@ -219,7 +222,11 @@ const DashboardHeader: React.FC<{}> = () => {
     const mobileMenuId = 'menu-mobile';
 
     const renderShoppingCartLink = () => (
-        <MenuNavLink to="/shopping-cart" muiLinkProps={{ variant: "h5" }} title="View shopping basket">
+        <MenuNavLink
+            to="/shopping-cart"
+            muiLinkProps={{ variant: 'h5' }}
+            title="View shopping basket"
+        >
             <IconButton aria-label="show 17 new notifications" color="inherit">
                 <Badge badgeContent={17} color="secondary">
                     <ShoppingBasketIcon />
@@ -240,7 +247,8 @@ const DashboardHeader: React.FC<{}> = () => {
                     root: classes.toolbarRoot
                 }}>
                     <div className='logo'>
-                        <MenuNavLink to="/" muiLinkProps={{ variant: "h5" }}>
+
+                        <MenuNavLink to="/" muiLinkProps={{ variant: "h5" }} title="Home page">
                             Pizza Store
                         </MenuNavLink>
                     </div>
@@ -263,17 +271,20 @@ const DashboardHeader: React.FC<{}> = () => {
                         </div>
                     </div>
                     <div className={classes.sectionDesktop}>
-                        <MenuNavLink to="/menu" muiLinkProps={{ variant: "h5" }}>
-                            Menu
-                        </MenuNavLink>
-                        <MenuNavLink to="/about-us" muiLinkProps={{ variant: "h5" }}>
-                            About Us
-                        </MenuNavLink>
-                        <MenuNavLink to="/contact" muiLinkProps={{ variant: "h5" }}>
-                            Contact
-                        </MenuNavLink>
+                        {
+                            [
+                                { to: '/menu', title: 'Menu' },
+                                { to: '/about-us', title: 'About Us' },
+                                { to: '/contact', title: 'Contact' },
+                                { to: '/login', title: 'Login' },
+                            ].map(({ to, title }) => (
+                                <MenuNavLink key={to} to={to} muiLinkProps={{ variant: 'h5' }} title={title}>
+                                    {title}
+                                </MenuNavLink>
+                            ))
+                        }
                         {renderShoppingCartLink()}
-                        <MenuNavLink to="/login" muiLinkProps={{ variant: "h5" }} title="See order history">
+                        <MenuNavLink to='/login' muiLinkProps={{ variant: 'h5' }} title="See SOrder history link">
                             <IconButton
                                 edge="end"
                                 aria-label="See order history link"
