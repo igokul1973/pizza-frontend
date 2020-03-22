@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import Menu from './menu/Menu';
+import PizzaMenu from './menu/PizzaMenu';
 import AboutUs from './aboutUs/AboutUs';
 import clsx from 'clsx';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
@@ -27,7 +27,7 @@ const FrontContent: React.FC<{}> = () => {
         <main className={clsx('front-content-component', classes.root)}>
             <Switch>
                 <Route exact path='/' component={Home} />
-                <Route path='/menu' component={Menu} />
+                <Route path='/menu' component={PizzaMenu} />
                 <Route path='/about-us' component={AboutUs} />
                 <Route path='/contact' component={Contact} />
                 <Route path='/shopping-cart' component={ShoppingCart} />

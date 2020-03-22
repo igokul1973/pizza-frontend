@@ -219,7 +219,7 @@ const DashboardHeader: React.FC<{}> = () => {
     const mobileMenuId = 'menu-mobile';
 
     const renderShoppingCartLink = () => (
-        <MenuNavLink to="/shopping-cart" variant="h5" title="View shopping basket">
+        <MenuNavLink to="/shopping-cart" muiLinkProps={{ variant: "h5" }} title="View shopping basket">
             <IconButton aria-label="show 17 new notifications" color="inherit">
                 <Badge badgeContent={17} color="secondary">
                     <ShoppingBasketIcon />
@@ -240,7 +240,7 @@ const DashboardHeader: React.FC<{}> = () => {
                     root: classes.toolbarRoot
                 }}>
                     <div className='logo'>
-                        <MenuNavLink to="/" variant="h5">
+                        <MenuNavLink to="/" muiLinkProps={{ variant: "h5" }}>
                             Pizza Store
                         </MenuNavLink>
                     </div>
@@ -263,17 +263,17 @@ const DashboardHeader: React.FC<{}> = () => {
                         </div>
                     </div>
                     <div className={classes.sectionDesktop}>
-                        <MenuNavLink to="/menu" variant="h5">
+                        <MenuNavLink to="/menu" muiLinkProps={{ variant: "h5" }}>
                             Menu
                         </MenuNavLink>
-                        <MenuNavLink to="/about-us" variant="h5">
+                        <MenuNavLink to="/about-us" muiLinkProps={{ variant: "h5" }}>
                             About Us
                         </MenuNavLink>
-                        <MenuNavLink to="/contact" variant="h5">
+                        <MenuNavLink to="/contact" muiLinkProps={{ variant: "h5" }}>
                             Contact
                         </MenuNavLink>
                         {renderShoppingCartLink()}
-                        <MenuNavLink to="/login" variant="h5" title="See order history">
+                        <MenuNavLink to="/login" muiLinkProps={{ variant: "h5" }} title="See order history">
                             <IconButton
                                 edge="end"
                                 aria-label="See order history link"

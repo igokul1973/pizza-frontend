@@ -105,7 +105,7 @@ const Home: React.FC<{}> = () => {
             >
                 <Grid item className={classes.imgRoot}>
                     <Link to="/menu">
-                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'Pizza')} />
+                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'pizza')} />
                     </Link>
                 </Grid>
                 <Grid item>
@@ -115,7 +115,7 @@ const Home: React.FC<{}> = () => {
                 </Grid>
                 <Grid item className={classes.imgRoot}>
                     <Link to="/menu">
-                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'Pizza')} />
+                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'pizza')} />
                     </Link>
                 </Grid>
                 <Grid item >
@@ -125,7 +125,7 @@ const Home: React.FC<{}> = () => {
                 </Grid>
                 <Grid item className={classes.imgRoot}>
                     <Link to="/menu">
-                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'Soft drink')} />
+                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'soft drink')} />
                     </Link>
                 </Grid>
             </Grid>

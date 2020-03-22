@@ -1,14 +1,13 @@
 import React from 'react';
-import { Link, MuiLinkProps } from '@material-ui/core';
-import { Link as RouterLink, NavLinkProps, } from 'react-router-dom';
-import clsx from 'clsx';
+import { Link as MuiLink, MuiLinkProps } from '@material-ui/core';
+import { Link as RouterLink, RouterLinkProps, } from 'react-router-dom';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const useLinkStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            textDecoration: 'none',
             '&:hover': {
+                textDecoration: 'none',
             }
         }
     })
@@ -22,17 +21,17 @@ const useTypographyStyles = makeStyles((theme: Theme) =>
     })
 );
 
-interface IProps extends NavLinkProps {
+interface IProps extends RouterLinkProps {
     muiLinkProps?: MuiLinkProps
 }
 
-const MenuNavLink: React.FC<IProps> = ({ children, ...otherProps }) => {
+const Link: React.FC<IProps> = ({ children, ...otherProps }) => {
 
     const linkClasses = useLinkStyles();
     const typographyClasses = useTypographyStyles();
 
-    const NavLinkRef = React.forwardRef<any, IProps>((props, ref) => (
-        <Link
+    const LinkRef = React.forwardRef<any, IProps>((props, ref) => (
+        <MuiLink
             ref={ref}
             children={children}
             classes={{
@@ -42,13 +41,12 @@ const MenuNavLink: React.FC<IProps> = ({ children, ...otherProps }) => {
             TypographyClasses={{
                 colorPrimary: typographyClasses.colorPrimary
             }}
-            {...props.muiLinkProps}
-        />
+            {...props.muiLinkProps} />
     ));
 
     return (
         <RouterLink
-            component={NavLinkRef}
+            component={LinkRef}
             {...otherProps}
         >
             {children}
@@ -56,4 +54,4 @@ const MenuNavLink: React.FC<IProps> = ({ children, ...otherProps }) => {
     )
 }
 
-export default MenuNavLink;
+export default Link;

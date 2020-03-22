@@ -48,13 +48,13 @@ const FrontFooter: React.FC<{}> = () => {
                 }}>
                     <div className={classes.sectionDesktop}>
                         <Hidden smDown implementation="js">
-                            <MenuNavLink to="/about-us" variant="h5">
+                            <MenuNavLink to="/about-us" muiLinkProps={{ variant: "h5" }}>
                                 About Us
                             </MenuNavLink>
                             <Link href="https://innoscripta.com/" variant="body1" style={{ color: 'white' }}>
                                 Created as a test drive for Innoscripta GMBH &#9400; 2020
                             </Link>
-                            <MenuNavLink to="/contact" variant="h5">
+                            <MenuNavLink to="/contact" muiLinkProps={{ variant: "h5" }}>
                                 Contact
                             </MenuNavLink>
                         </Hidden>
