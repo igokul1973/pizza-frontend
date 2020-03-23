@@ -12,6 +12,7 @@ import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { formatPrice } from '../../../utilities/index';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -43,10 +44,6 @@ interface IProps {
     date: string
     abbrev: string
 }
-
-const formatPrice = (price: number) => {
-    return price.toFixed(2);
-};
 
 const MenuCard: React.FC<IProps> = ({
     name, description, imgUrl, price, date, abbrev

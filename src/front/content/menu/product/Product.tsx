@@ -8,6 +8,7 @@ import { GET_PRODUCTS, TGetProductVariables } from '../../queries';
 import IProduct from '../../../../interfaces/IProduct';
 import { Grid, Typography, TextField, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { formatPrice } from '../../../../utilities/index';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -87,7 +88,7 @@ const Product: React.FC<{}> = () => {
                             variant='h4'
                             color="primary"
                         >
-                            Price: ${product.price}
+                            Price: ${formatPrice(product.price)}
                         </Typography>
                     </Grid>
                     <Grid
