@@ -2,12 +2,13 @@ import fragments from "../../graphql/fragments";
 import gql from "graphql-tag";
 
 export type TGetProductVariables = {
-	id: string;
+	id?: string;
+	filter?: any;
 };
 
 export const GET_PRODUCTS = gql`
-	query products($id: ID) {
-		Product(id: $id) {
+	query products($id: ID, $filter: _ProductFilter) {
+		Product(id: $id, filter: $filter) {
 			...ProductPart
 			categories {
 				name

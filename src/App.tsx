@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import baseTheme from './baseTheme';
 import { ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from "@material-ui/core";
+import { CartContextProvider } from './context/cartContext';
 
 interface IProps {
     client: ApolloClient<any>
@@ -17,8 +18,10 @@ const App: React.FC<IProps> = ({ client }) => {
         <ApolloProvider client={client}>
             <BrowserRouter>
                 <ThemeProvider theme={baseTheme}>
-                    <CssBaseline />
-                    <Main />
+                    <CartContextProvider>
+                        <CssBaseline />
+                        <Main />
+                    </CartContextProvider>
                 </ThemeProvider>
             </BrowserRouter>
         </ApolloProvider >

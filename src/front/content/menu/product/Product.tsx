@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import clsx from 'clsx';
 import HeaderTitle from '../../headerTitle/headerTitle';
@@ -9,6 +9,11 @@ import IProduct from '../../../../interfaces/IProduct';
 import { Grid, Typography, TextField, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { formatPrice } from '../../../../utilities/index';
+import authDb from '../../../../indexedDb/index';
+import { CartContext } from '../../../../context/cartContext';
+import actionTypes from '../../../../actions/actionTypes';
+import {toast} from "react-toastify";
+import {min} from "moment";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -36,6 +41,8 @@ const Product: React.FC<{}> = () => {
     const theme = useTheme();
     const isLargerThanMd = useMediaQuery(theme.breakpoints.up('md'));
     const { id } = useParams<{ id: string }>();
+    const [quantity, setQuantity] = useState<number|"">(1);
+    const { dispatch } = useContext(CartContext);
     const { loading, error, data } = useQuery<{ Product: IProduct[] }, TGetProductVariables>(
         GET_PRODUCTS,
         { variables: { id } }
@@ -51,6 +58,37 @@ const Product: React.FC<{}> = () => {
     }
 
     const product = data!.Product[0];
+
+    const changeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setQuantity(+event.target.value);
+    };
+
+    const addToCart = async (id: string, quantity: number | "") => {
+        if (!quantity) {
+            const message = 'Please set the value in the quantity field';
+            return toast(message, {
+                type: 'error',
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
+        const item = await authDb.get(id);
+        let dbQuantity = quantity;
+        if (item) {
+            dbQuantity = quantity + item.quantity;
+        }
+        authDb.insert(id, dbQuantity)
+            .then(res => {
+                dispatch({ type: actionTypes.ADD_ITEM, payload: { item: { id, quantity } } });
+                const message = 'Item added to cart';
+                toast(message, {
+                    type: 'info',
+                    position: toast.POSITION.TOP_CENTER
+                });
+            })
+            .catch(e => {
+                console.error(e);
+            });
+    };
 
     return (
         <>
@@ -147,13 +185,20 @@ const Product: React.FC<{}> = () => {
                         alignItems="center"
                     >
                         <Grid item>
-                            <TextField variant="outlined" value={1} />
+                            <TextField
+                                variant="outlined"
+                                type="number"
+                                inputProps={{min: 1}}
+                                value={quantity}
+                                onChange={changeQuantity}
+                            />
                         </Grid>
                         <Grid item>
                             <Button
                                 variant="contained"
                                 size="large"
                                 color="secondary"
+                                onClick={() => addToCart(product.id, quantity)}
                             >
                                 Add to cart
                             </Button>

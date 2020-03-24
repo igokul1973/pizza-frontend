@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { AppBar, CssBaseline, Toolbar, Link, Hidden } from '@material-ui/core';
+import { AppBar, Toolbar, Link, Hidden } from '@material-ui/core';
 import MenuNavLink from '../../components/menuNavLink/MenuNavLink';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
@@ -37,7 +37,6 @@ const FrontFooter: React.FC<{}> = () => {
 
     return (
         <div className="front-footer-component">
-            <CssBaseline />
             <AppBar
                 component="nav"
                 position="static"

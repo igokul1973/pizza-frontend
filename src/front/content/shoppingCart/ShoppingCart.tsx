@@ -1,5 +1,4 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useCallback, useContext, useMemo, useState} from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_PRODUCTS, TGetProductVariables } from '../queries';
 import IProduct from '../../../interfaces/IProduct';
@@ -28,6 +27,12 @@ import {
 import HeaderTitle from '../headerTitle/headerTitle';
 import Loading from '../../../components/loading/Loading';
 import { formatPrice } from '../../../utilities/index';
+import { CartContext } from '../../../context/cartContext';
+import authDb, { IItem } from '../../../indexedDb';
+import actionTypes from '../../../actions/actionTypes';
+import Link from '../../../components/link/Link';
+import {toast} from "react-toastify";
+import {debounce} from "lodash";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -57,11 +62,20 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         center: {
             textAlign: 'center'
+        },
+        centerLink: {
+            display: 'block',
+            width: '100%',
+            textAlign: 'center'
+        },
+        deleteIcon: {
+            cursor: 'pointer'
         }
     }),
-)
+);
 
 interface IItemRow {
+    id: string
     image: string
     name: string
     price: number
@@ -69,16 +83,43 @@ interface IItemRow {
     total: number
 }
 
-
 const ShoppingCart: React.FC<{}> = () => {
     const classes = useStyles();
     const theme = useTheme();
     const isLargerThanSm = useMediaQuery(theme.breakpoints.up('sm'));
-    const { id } = useParams<{ id: string }>();
+    const { items, dispatch } = useContext(CartContext);
+    const [updatedItems, setUpdatedItems] = useState<IItem[]>([]);
     const { loading, error, data } = useQuery<{ Product: IProduct[] }, TGetProductVariables>(
         GET_PRODUCTS,
-        { variables: { id } }
+        {
+            variables: {
+                filter: {
+                    AND: [
+                        { id_in: items.map(item => item.id) },
+                        { status: "available" }
+                    ]
+                }
+            }
+        }
     );
+
+    const products = (data && data.Product) ? data.Product : [];
+
+    const getSubtotal = (items: IItem[], products: IProduct[]) => {
+        if (!products || !items) {
+            return 0;
+        }
+        const subtotalProducts = products.filter(product => {
+            return items.map(item => item.id).includes(product.id)
+        });
+        return subtotalProducts.reduce((subtotal, product) => {
+            return subtotal + (product.price * items.find(item => item.id === product.id)!.quantity)
+        }, 0);
+    };
+
+    const subtotal = useMemo(() => {
+        return getSubtotal(items, products);
+    }, [items, products]);
 
     if (loading) {
         return <Loading />
@@ -89,15 +130,73 @@ const ShoppingCart: React.FC<{}> = () => {
         )
     }
 
-    const product = data!.Product[0];
-    const products = [1, 2, 3].map(l => product);
+    const changeQuantity = (value: number, id: string) => {
+        if (!value) {
+            const message = 'Please set the value in the quantity field';
+            return toast(message, {
+                type: 'error',
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
+        return updateCartItemQuantity(id, value)
+            .then(_ => {
+                const message = 'Shopping cart has been updated';
+                toast(message, {
+                    type: 'info',
+                    position: toast.POSITION.TOP_CENTER
+                });
+            })
+    };
+
+    const debouncedChangeQuantity = debounce(changeQuantity, 1000);
+
+
+    /**
+     * Updates items if their quantity has changed
+     */
+    const updateCartItemQuantity = async (id: string, quantity: number) => {
+        /*const itemsToUpdate = updatedItems.map((updatedItem) => {
+            const product = products.find(product => product.id === updatedItem.id);
+            if (product) {
+                return { ...product, quantity: updatedItem.quantity };
+            }
+            return product;
+        })
+            .filter(updatedItem => updatedItem !== undefined) as IItem[];*/
+        authDb.insert(id, quantity)
+            .then(_ => {
+                // itemsToUpdate.forEach((item) => {
+                    dispatch({
+                        type: actionTypes.UPDATE_ITEM_QUANTITY,
+                        payload: { item: { id, quantity } }
+                    });
+                // })
+            })
+            .catch(e => {
+                console.error(e);
+            });
+    };
+
+    const deleteCartItem = (id: string) => {
+        authDb.remove(id)
+            .then(items => {
+                dispatch({ type: actionTypes.REMOVE_ITEM, payload: { id } });
+            })
+            .catch(e => {
+                console.error(e)
+            });
+    };
+
 
     const createData = (product: IProduct): IItemRow => {
+        const item = items.find(item => item.id === product.id);
+        const quantity = (item) ? item.quantity : 0;
         return {
+            id: product.id,
             image: product.imgUrl,
             name: product.name,
             price: product.price,
-            quantity: 1,
+            quantity: quantity,
             total: 200
         };
     };
@@ -125,42 +224,51 @@ const ShoppingCart: React.FC<{}> = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {createRows().map(({ image, name, price, quantity, total }) => (
-                        <TableRow key={name}>
-                            <TableCell component="th" scope="row" className={classes.imgRoot}>
-                                <img
-                                    src={image}
-                                    alt={name}
-                                    className={classes.img}
-                                />
-                            </TableCell>
-                            <TableCell align="center">{name}</TableCell>
-                            <TableCell align="center">
-                                <TextField
-                                    variant="outlined"
-                                    value={quantity}
-                                    InputProps={{
-                                        style: { width: "5rem" }
-                                    }}
-                                />
-                            </TableCell>
-                            <TableCell align="center">{price}</TableCell>
-                            <TableCell align="center">{total}</TableCell>
-                            <TableCell align="center"><DeleteIcon color="error" /></TableCell>
-                        </TableRow>
-                    ))}
-                    <TableRow>
-                        <TableCell align="right" colSpan={6}>
-                            <Button
-                                variant="contained"
-                                size="large"
-                                color="secondary"
-                                style={{ marginLeft: 'auto' }}
-                            >
-                                Update Cart
-                            </Button>
-                        </TableCell>
-                    </TableRow>
+                    {createRows().map(({ id, image, name, price, quantity, total }) => {
+                        if (updatedItems.length) {
+                            const updatedProduct = updatedItems.find((updatedItem) => {
+                                return updatedItem.id = id;
+                            });
+                            if (updatedProduct) {
+                                quantity = updatedProduct.quantity;
+                            }
+                        }
+                        return (
+                            <TableRow key={name}>
+                                <TableCell component="th" scope="row" className={classes.imgRoot}>
+                                    <Link to={`/menu/${id}`}>
+                                        <img
+                                            src={image}
+                                            alt={name}
+                                            className={classes.img}
+                                        />
+                                    </Link>
+                                </TableCell>
+                                <TableCell align="center">{name}</TableCell>
+                                <TableCell align="center">
+                                    <TextField
+                                        variant="outlined"
+                                        defaultValue={quantity}
+                                        type="number"
+                                        inputProps={{min: 1}}
+                                        InputProps={{
+                                            style: { width: "5rem" }
+                                        }}
+                                        onChange={(e) => debouncedChangeQuantity(+e.target.value, id)}
+                                    />
+                                </TableCell>
+                                <TableCell align="center">{price}</TableCell>
+                                <TableCell align="center">{formatPrice(price * quantity)}</TableCell>
+                                <TableCell align="center">
+                                    <DeleteIcon
+                                        color="error"
+                                        onClick={() => deleteCartItem(id)}
+                                        className={classes.deleteIcon}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
                 </TableBody>
             </Table>
         </TableContainer>
@@ -169,7 +277,7 @@ const ShoppingCart: React.FC<{}> = () => {
     const renderMobile = () => (
         <>
             {
-                createRows().map(({ image, name, price, quantity, total }) => (
+                createRows().map(({ id, image, name, price, quantity, total }) => (
                     <TableContainer key="name">
                         <Table
                             size="small"
@@ -189,14 +297,23 @@ const ShoppingCart: React.FC<{}> = () => {
                                         <TextField
                                             variant="outlined"
                                             size="small"
-                                            value={quantity}
+                                            defaultValue={quantity}
+                                            type="number"
+                                            inputProps={{
+                                                min: 1
+                                            }}
                                             InputProps={{
                                                 style: { width: "5rem" }
                                             }}
+                                            onChange={(e) => debouncedChangeQuantity(+e.target.value, id)}
                                         />
                                     </TableCell>
                                     <TableCell align="right">
-                                        <DeleteIcon color="error" />
+                                        <DeleteIcon
+                                            color="error"
+                                            onClick={() => deleteCartItem(id)}
+                                            className={classes.deleteIcon}
+                                        />
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
@@ -210,29 +327,13 @@ const ShoppingCart: React.FC<{}> = () => {
                                         colSpan={2}
                                         style={{ fontWeight: 'bold' }}
                                     >
-                                        ${formatPrice(total)}
+                                        {formatPrice(price * quantity)}
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
                     </TableContainer>
                 ))}
-
-            <Grid
-                container
-                justify={isLargerThanSm ? "flex-end" : "flex-start"}
-            >
-                <Grid item xs={12}>
-                    <Button
-                        variant="contained"
-                        size="large"
-                        fullWidth={!isLargerThanSm}
-                        color="secondary"
-                    >
-                        Update Cart
-                    </Button>
-                </Grid>
-            </Grid>
         </>
     );
 
@@ -241,78 +342,103 @@ const ShoppingCart: React.FC<{}> = () => {
             <HeaderTitle>
                 Shopping Cart
             </HeaderTitle>
-            <Hidden xsDown implementation="js">
-                {renderDesktop()}
-            </Hidden>
-            <Hidden smUp implementation="js">
-                {renderMobile()}
-            </Hidden>
-            <Grid
-                container
-                justify={isLargerThanSm ? "flex-end" : "flex-start"}
-                style={{ marginTop: '3rem' }}
-            >
-                <Grid
-                    item
-                    container
-                    direction="column"
-                    wrap="nowrap"
-                    xs={12}
-                    sm={6}
-                >
-                    <Grid
-                        item
-                        align={isLargerThanSm ? 'left' : 'center'}
-                        component={Typography}
-                        variant="h2"
-                        xs={12}
-                    >
-                        Cart totals
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                    >
-                        <TableContainer>
-                            <Table
-                                size="small"
-                                aria-label="Shopping cart totals"
-                                className={classes.mobileTable}
-                            >
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">Subtotal:</TableCell>
-                                        <TableCell align="right" colSpan={2}>${formatPrice(1000)}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">Total:</TableCell>
-                                        <TableCell align="right" colSpan={2}>
-                                            <Typography variant="h5">
-                                                ${formatPrice(1000)}
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                        component={Typography}
-                        variant="h2"
-                    >
-                        <Button
-                            variant="contained"
-                            size="large"
-                            fullWidth={!isLargerThanSm}
-                            color="primary"
+            {!products.length
+                ? (
+                    <>
+                        <Typography variant="h4" className={classes.center}>
+                            There are no items in your shopping cart
+                        </Typography>
+                        <Link
+                            to="/menu"
+                            muiLinkProps={{
+                                variant: "h4",
+                                className: classes.centerLink,
+                                style: { display: 'block', width: "100%" }
+                            }}
                         >
-                            Proceed to Checkout
-                    </Button>
-                    </Grid>
-                </Grid>
-            </Grid>
+                            Keep on shopping!
+                    </Link>
+                    </>
+                )
+                : (
+                    <>
+                        <Hidden xsDown implementation="js">
+                            {renderDesktop()}
+                        </Hidden>
+                        <Hidden smUp implementation="js">
+                            {renderMobile()}
+                        </Hidden>
+                        <Grid
+                            container
+                            justify={isLargerThanSm ? "flex-end" : "flex-start"}
+                            style={{ marginTop: '3rem' }}
+                        >
+                            <Grid
+                                item
+                                container
+                                direction="column"
+                                wrap="nowrap"
+                                xs={12}
+                                sm={6}
+                            >
+                                <Grid
+                                    item
+                                    align={isLargerThanSm ? 'left' : 'center'}
+                                    component={Typography}
+                                    variant="h2"
+                                    xs={12}
+                                >
+                                    Cart totals
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                >
+                                    <TableContainer>
+                                        <Table
+                                            size="small"
+                                            aria-label="Shopping cart totals"
+                                            className={classes.mobileTable}
+                                        >
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell component="th" scope="row">Subtotal:</TableCell>
+                                                    <TableCell align="right" colSpan={2}>
+                                                        ${formatPrice(subtotal)}
+                                                    </TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell component="th" scope="row">Total:</TableCell>
+                                                    <TableCell align="right" colSpan={2}>
+                                                        <Typography variant="h5">
+                                                            ${formatPrice(subtotal)}
+                                                        </Typography>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    component={Typography}
+                                    variant="h2"
+                                >
+                                    <Button
+                                        variant="contained"
+                                        size="large"
+                                        fullWidth={!isLargerThanSm}
+                                        color="primary"
+                                    >
+                                        Proceed to Checkout
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </>
+                )
+            }
         </>
     )
 };

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createStyles, makeStyles, Theme, fade } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import {
-    CssBaseline,
     AppBar,
     Toolbar,
     IconButton,
@@ -23,6 +22,7 @@ import MoreIcon from '@material-ui/icons/More';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import { AccountCircle } from '@material-ui/icons';
 import MenuNavLink from '../../components/menuNavLink/MenuNavLink';
+import { CartContext } from '../../context/cartContext';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -151,6 +151,7 @@ const DashboardHeader: React.FC<{}> = () => {
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState<boolean>(false);
     const [searchExpanded, setSearchExpanded] = React.useState<boolean>(false);
+    const { items } = useContext(CartContext);
 
     const onSearchIconClick = () => {
         setSearchExpanded(!searchExpanded);
@@ -228,7 +229,7 @@ const DashboardHeader: React.FC<{}> = () => {
             title="View shopping basket"
         >
             <IconButton aria-label="show 17 new notifications" color="inherit">
-                <Badge badgeContent={17} color="secondary">
+                <Badge badgeContent={items.length ? items.length : 0} color="secondary">
                     <ShoppingBasketIcon />
                 </Badge>
             </IconButton>
@@ -237,7 +238,6 @@ const DashboardHeader: React.FC<{}> = () => {
 
     return (
         <div className={classes.root}>
-            <CssBaseline />
             <AppBar
                 component="nav"
                 position="fixed"
