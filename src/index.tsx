@@ -10,6 +10,7 @@ import "./index.scss";
 import * as serviceWorker from "./serviceWorker";
 import { ErrorResponse } from "apollo-link-error";
 import ApolloClient, { InMemoryCache } from "apollo-boost";
+
 import defaultClientState from "./graphql/defaultClientState";
 import App from './App';
 
@@ -45,7 +46,7 @@ const onError = ({ graphQLErrors, networkError }: ErrorResponse) => {
 
 const client = new ApolloClient({
     cache,
-    uri: "http://localhost:4001/graphql",
+    uri: process.env.REACT_APP_PROXY || "http://localhost:4001/graphql",
     clientState: stateLink,
     onError
 });

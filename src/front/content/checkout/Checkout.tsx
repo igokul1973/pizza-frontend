@@ -6,7 +6,7 @@ import {
     createStyles
 } from '@material-ui/core/styles';
 import HeaderTitle from "../headerTitle/headerTitle";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikProps } from "formik";
 import {
     Button,
     Grid,
@@ -394,7 +394,7 @@ const Checkout: React.FC<{}> = () => {
                         onSubmit={onSubmit}
                     >
                         {
-                            ({dirty, isValid}) => {
+                            ({dirty, isValid, errors, touched}: FormikProps<IFormValues>) => {
                                 const isFormValid = dirty && isValid;
                                 return (
                                     <Form>
@@ -435,6 +435,21 @@ const Checkout: React.FC<{}> = () => {
                                                 </Typography>
                                             </Grid>
                                             <Grid item xs={12}>
+                                                <label style={
+                                                    errors.addressCategory && touched.addressCategory ? {color: 'red'} : undefined
+                                                }>
+                                                    Please select the delivery address category:
+                                                </label>
+                                                <FormField
+                                                    name="addressCategory"
+                                                    control={Select}
+                                                    select
+                                                    selectOptions={addressCategoriesSelectItems}
+                                                    label="Select address category"
+                                                    placeholder="Address category"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
                                                 <FormField
                                                     name="street"
                                                     control={TextField}
@@ -468,16 +483,6 @@ const Checkout: React.FC<{}> = () => {
                                                     Order details
                                                 </Typography>
                                             </Grid>
-                                            <Grid item xs={12}>
-                                                <FormField
-                                                    name="addressCategory"
-                                                    control={Select}
-                                                    select={true}
-                                                    selectOptions={addressCategoriesSelectItems}
-                                                    placeholder="Order details"
-                                                />
-                                            </Grid>
-
                                             <Grid item xs={12}>
                                                 <FormField
                                                     name="details"
