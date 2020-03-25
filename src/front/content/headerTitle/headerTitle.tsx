@@ -1,11 +1,11 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-const HeaderTitle: React.FC<{}> = ({ children }) => (
+const HeaderTitle: React.FC<{isError?: boolean}> = ({ children, isError = false }) => (
     <Typography
         variant="h1"
         align="center"
-        color="secondary"
+        color={isError ? "error" : "secondary"}
         style={{ marginBottom: "3rem" }}
     >
         {children}

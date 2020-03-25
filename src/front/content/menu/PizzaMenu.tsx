@@ -14,14 +14,13 @@ const PizzaMenu: React.FC<{}> = () => {
     if (loading) {
         return <Loading />
     }
+
     if (error) {
         return (
-            <div>
-                <pre>
-                    {JSON.stringify(error, null, 2)}
-                </pre>
-            </div>
-        )
+            <HeaderTitle isError={true}>
+                Oops! Something went wrong!
+            </HeaderTitle>
+        );
     }
 
     const products = data!.Product;

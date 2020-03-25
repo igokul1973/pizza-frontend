@@ -1,4 +1,6 @@
+import INeo4jDateTime from "./INeo4jDateTime";
+
 export default interface IDateTime {
-	createdAt: { formatted: string };
-	updatedAt: { formatted: string };
+	createdAt: INeo4jDateTime;
+	updatedAt: INeo4jDateTime;
 }

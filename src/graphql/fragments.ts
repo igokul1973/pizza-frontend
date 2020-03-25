@@ -8,6 +8,9 @@ const fragments = {
 			description
 			price
 			status
+			categories {
+				name
+			}
 			imgUrl
 		}
 	`,

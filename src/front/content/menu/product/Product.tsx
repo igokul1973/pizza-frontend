@@ -8,12 +8,11 @@ import { GET_PRODUCTS, TGetProductVariables } from '../../queries';
 import IProduct from '../../../../interfaces/IProduct';
 import { Grid, Typography, TextField, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { formatPrice } from '../../../../utilities/index';
 import authDb from '../../../../indexedDb/index';
 import { CartContext } from '../../../../context/cartContext';
 import actionTypes from '../../../../actions/actionTypes';
 import {toast} from "react-toastify";
-import {min} from "moment";
+import { formatPrice } from "../../../../utilities";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
             textAlign: 'center'
         }
     }),
-)
+);
 
 
 const Product: React.FC<{}> = () => {
@@ -51,10 +50,13 @@ const Product: React.FC<{}> = () => {
     if (loading) {
         return <Loading />
     }
+
     if (error) {
         return (
-            <div>{JSON.stringify(error, null, 2)}</div>
-        )
+            <HeaderTitle isError={true}>
+                Oops! Something went wrong!
+            </HeaderTitle>
+        );
     }
 
     const product = data!.Product[0];

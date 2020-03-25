@@ -10,6 +10,7 @@ import { deepOrange } from '@material-ui/core/colors/'
 import AddIcon from '@material-ui/icons/Add';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import ImageGallery from '../../../components/imageGallery/ImageGallery';
+import HeaderTitle from "../headerTitle/headerTitle";
 
 const useStyles = makeStyles(theme => ({
     gallery: {
@@ -44,25 +45,23 @@ const Home: React.FC<{}> = () => {
 
     if (error) {
         return (
-            <div>
-                <pre>
-                    {JSON.stringify(error, null, 2)}
-                </pre>
-            </div>
-        )
+            <HeaderTitle isError={true}>
+                Oops! Something went wrong!
+            </HeaderTitle>
+        );
     }
 
-    const getGalleryItems = (items: IProduct[]) => {
-        return items.map((item, index) => {
+    const getGalleryItems = (products: IProduct[]) => {
+        return products.map((item, index) => {
             return { src: item.imgUrl, index };
         });
     };
 
-    const getRandomImageUrlByCategory = (items: IProduct[], category: string) => {
-        const filteredItems = items.filter(item => item.categories.some((cat) => cat.name === category));
+    const getRandomImageUrlByCategory = (products: IProduct[], category: string) => {
+        const filteredItems = products.filter(item => item.categories.some((cat) => cat.name === category));
         const randomNumber = Math.floor(Math.random() * filteredItems.length);
         return filteredItems[randomNumber].imgUrl;
-    }
+    };
 
     return (
         <div className="home-component">
@@ -131,6 +130,6 @@ const Home: React.FC<{}> = () => {
             </Grid>
         </div>
     );
-}
+};
 
 export default Home;

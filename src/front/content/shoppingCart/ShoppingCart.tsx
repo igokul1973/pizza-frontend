@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useMemo, useState} from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_PRODUCTS, TGetProductVariables } from '../queries';
 import IProduct from '../../../interfaces/IProduct';
@@ -26,13 +26,14 @@ import {
 } from '@material-ui/core/styles';
 import HeaderTitle from '../headerTitle/headerTitle';
 import Loading from '../../../components/loading/Loading';
-import { formatPrice } from '../../../utilities/index';
+import { formatPrice, getTotal } from '../../../utilities';
 import { CartContext } from '../../../context/cartContext';
-import authDb, { IItem } from '../../../indexedDb';
+import authDb from '../../../indexedDb';
 import actionTypes from '../../../actions/actionTypes';
 import Link from '../../../components/link/Link';
-import {toast} from "react-toastify";
-import {debounce} from "lodash";
+import { toast } from "react-toastify";
+import { debounce } from "lodash";
+import { NavLink } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -80,7 +81,6 @@ interface IItemRow {
     name: string
     price: number
     quantity: number
-    total: number
 }
 
 const ShoppingCart: React.FC<{}> = () => {
@@ -88,7 +88,6 @@ const ShoppingCart: React.FC<{}> = () => {
     const theme = useTheme();
     const isLargerThanSm = useMediaQuery(theme.breakpoints.up('sm'));
     const { items, dispatch } = useContext(CartContext);
-    const [updatedItems, setUpdatedItems] = useState<IItem[]>([]);
     const { loading, error, data } = useQuery<{ Product: IProduct[] }, TGetProductVariables>(
         GET_PRODUCTS,
         {
@@ -105,29 +104,20 @@ const ShoppingCart: React.FC<{}> = () => {
 
     const products = (data && data.Product) ? data.Product : [];
 
-    const getSubtotal = (items: IItem[], products: IProduct[]) => {
-        if (!products || !items) {
-            return 0;
-        }
-        const subtotalProducts = products.filter(product => {
-            return items.map(item => item.id).includes(product.id)
-        });
-        return subtotalProducts.reduce((subtotal, product) => {
-            return subtotal + (product.price * items.find(item => item.id === product.id)!.quantity)
-        }, 0);
-    };
-
     const subtotal = useMemo(() => {
-        return getSubtotal(items, products);
+        return getTotal(items, products);
     }, [items, products]);
 
     if (loading) {
-        return <Loading />
+        return <Loading/>
     }
+
     if (error) {
         return (
-            <div>{JSON.stringify(error, null, 2)}</div>
-        )
+            <HeaderTitle isError={true}>
+                Oops! Something went wrong!
+            </HeaderTitle>
+        );
     }
 
     const changeQuantity = (value: number, id: string) => {
@@ -166,10 +156,10 @@ const ShoppingCart: React.FC<{}> = () => {
         authDb.insert(id, quantity)
             .then(_ => {
                 // itemsToUpdate.forEach((item) => {
-                    dispatch({
-                        type: actionTypes.UPDATE_ITEM_QUANTITY,
-                        payload: { item: { id, quantity } }
-                    });
+                dispatch({
+                    type: actionTypes.UPDATE_ITEM_QUANTITY,
+                    payload: { item: { id, quantity } }
+                });
                 // })
             })
             .catch(e => {
@@ -187,7 +177,6 @@ const ShoppingCart: React.FC<{}> = () => {
             });
     };
 
-
     const createData = (product: IProduct): IItemRow => {
         const item = items.find(item => item.id === product.id);
         const quantity = (item) ? item.quantity : 0;
@@ -197,7 +186,6 @@ const ShoppingCart: React.FC<{}> = () => {
             name: product.name,
             price: product.price,
             quantity: quantity,
-            total: 200
         };
     };
 
@@ -224,18 +212,11 @@ const ShoppingCart: React.FC<{}> = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {createRows().map(({ id, image, name, price, quantity, total }) => {
-                        if (updatedItems.length) {
-                            const updatedProduct = updatedItems.find((updatedItem) => {
-                                return updatedItem.id = id;
-                            });
-                            if (updatedProduct) {
-                                quantity = updatedProduct.quantity;
-                            }
-                        }
+                    {createRows().map(({ id, image, name, price, quantity }) => {
                         return (
                             <TableRow key={name}>
-                                <TableCell component="th" scope="row" className={classes.imgRoot}>
+                                <TableCell component="th" scope="row"
+                                           className={classes.imgRoot}>
                                     <Link to={`/menu/${id}`}>
                                         <img
                                             src={image}
@@ -250,7 +231,7 @@ const ShoppingCart: React.FC<{}> = () => {
                                         variant="outlined"
                                         defaultValue={quantity}
                                         type="number"
-                                        inputProps={{min: 1}}
+                                        inputProps={{ min: 1 }}
                                         InputProps={{
                                             style: { width: "5rem" }
                                         }}
@@ -258,7 +239,8 @@ const ShoppingCart: React.FC<{}> = () => {
                                     />
                                 </TableCell>
                                 <TableCell align="center">{price}</TableCell>
-                                <TableCell align="center">{formatPrice(price * quantity)}</TableCell>
+                                <TableCell
+                                    align="center">{formatPrice(price * quantity)}</TableCell>
                                 <TableCell align="center">
                                     <DeleteIcon
                                         color="error"
@@ -277,8 +259,8 @@ const ShoppingCart: React.FC<{}> = () => {
     const renderMobile = () => (
         <>
             {
-                createRows().map(({ id, image, name, price, quantity, total }) => (
-                    <TableContainer key="name">
+                createRows().map(({ id, image, name, price, quantity }) => (
+                    <TableContainer key={name}>
                         <Table
                             size="small"
                             aria-label="Shopping cart item"
@@ -289,10 +271,12 @@ const ShoppingCart: React.FC<{}> = () => {
                                     <TableCell component="th" scope="row">
                                         Name:
                                     </TableCell>
-                                    <TableCell align="right" colSpan={2}>{name}</TableCell>
+                                    <TableCell align="right"
+                                               colSpan={2}>{name}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell component="th" scope="row">Quantity</TableCell>
+                                    <TableCell component="th"
+                                               scope="row">Quantity</TableCell>
                                     <TableCell align="right">
                                         <TextField
                                             variant="outlined"
@@ -317,11 +301,14 @@ const ShoppingCart: React.FC<{}> = () => {
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell component="th" scope="row">Price:</TableCell>
-                                    <TableCell align="right" colSpan={2}>${formatPrice(price)}</TableCell>
+                                    <TableCell component="th"
+                                               scope="row">Price:</TableCell>
+                                    <TableCell align="right"
+                                               colSpan={2}>${formatPrice(price)}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell component="th" scope="row">Total:</TableCell>
+                                    <TableCell component="th"
+                                               scope="row">Total:</TableCell>
                                     <TableCell
                                         align="right"
                                         colSpan={2}
@@ -357,7 +344,7 @@ const ShoppingCart: React.FC<{}> = () => {
                             }}
                         >
                             Keep on shopping!
-                    </Link>
+                        </Link>
                     </>
                 )
                 : (
@@ -402,15 +389,20 @@ const ShoppingCart: React.FC<{}> = () => {
                                         >
                                             <TableBody>
                                                 <TableRow>
-                                                    <TableCell component="th" scope="row">Subtotal:</TableCell>
-                                                    <TableCell align="right" colSpan={2}>
+                                                    <TableCell component="th"
+                                                               scope="row">Subtotal:</TableCell>
+                                                    <TableCell align="right"
+                                                               colSpan={2}>
                                                         ${formatPrice(subtotal)}
                                                     </TableCell>
                                                 </TableRow>
                                                 <TableRow>
-                                                    <TableCell component="th" scope="row">Total:</TableCell>
-                                                    <TableCell align="right" colSpan={2}>
-                                                        <Typography variant="h5">
+                                                    <TableCell component="th"
+                                                               scope="row">Total:</TableCell>
+                                                    <TableCell align="right"
+                                                               colSpan={2}>
+                                                        <Typography
+                                                            variant="h5">
                                                             ${formatPrice(subtotal)}
                                                         </Typography>
                                                     </TableCell>
@@ -425,14 +417,16 @@ const ShoppingCart: React.FC<{}> = () => {
                                     component={Typography}
                                     variant="h2"
                                 >
-                                    <Button
-                                        variant="contained"
-                                        size="large"
-                                        fullWidth={!isLargerThanSm}
-                                        color="primary"
-                                    >
-                                        Proceed to Checkout
-                                    </Button>
+                                    <NavLink to="/checkout">
+                                        <Button
+                                            variant="contained"
+                                            size="large"
+                                            fullWidth={!isLargerThanSm}
+                                            color="primary"
+                                        >
+                                            Proceed to Checkout
+                                        </Button>
+                                    </NavLink>
                                 </Grid>
                             </Grid>
                         </Grid>

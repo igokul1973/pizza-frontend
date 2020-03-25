@@ -10,6 +10,8 @@ import ShoppingCart from './shoppingCart/ShoppingCart';
 import Home from './home/Home';
 import LoginForm from './login/LoginForm';
 import Product from './menu/product/Product';
+import Checkout from "./checkout/Checkout";
+import OrderConfirmation from "./orderConfirmation/OrderConfirmation";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,6 +35,8 @@ const FrontContent: React.FC<{}> = () => {
                 <Route path='/about-us' component={AboutUs} />
                 <Route path='/contact' component={Contact} />
                 <Route path='/shopping-cart' component={ShoppingCart} />
+                <Route path='/checkout' component={Checkout} />
+                <Route path='/order-confirmation' component={OrderConfirmation} />
                 <Route path='/login' component={LoginForm} />
                 <Route component={NotFound} />
             </Switch>

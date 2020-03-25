@@ -1,6 +1,7 @@
 import IDateTime from "./IDateTime";
+import IProductCategory from "./IProductCategory";
 
-enum ProductStatusEnum {
+export enum ProductStatusEnum {
 	available = "available",
 	not_available = "not_available"
 }
@@ -12,5 +13,5 @@ export default interface IProduct extends IDateTime {
 	price: number;
 	status: ProductStatusEnum;
 	imgUrl: string;
-	categories: { name: string }[];
+	categories: IProductCategory[];
 }
