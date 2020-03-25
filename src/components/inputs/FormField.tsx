@@ -1,9 +1,15 @@
 import React from "react";
-import { makeStyles, TextFieldProps, Theme, MenuItem } from "@material-ui/core";
+import {
+    makeStyles,
+    TextFieldProps,
+    Theme,
+    MenuItem,
+    SelectProps
+} from "@material-ui/core";
 import { useField, FieldValidator } from "formik";
 import clsx from "clsx";
 
-type TProps = Partial<TextFieldProps> & {
+type TProps = Partial<TextFieldProps> & SelectProps & {
     name: string
     control: React.ComponentType<any>
     inputClass?: string
@@ -40,7 +46,7 @@ const FormField: React.FC<TProps> = ({
             className={clsx(classes.input, inputClass)}
             defaultValue={props.defaultValue}
             helperText={errorText || helperText}
-            error={errorText}
+            error={!!errorText}
             InputLabelProps={{
                 className: classes.label
             }}
@@ -50,6 +56,8 @@ const FormField: React.FC<TProps> = ({
     ) : (
             <Component
                 className={clsx(classes.input, inputClass)}
+                helperText={errorText || helperText}
+                error={!!errorText}
                 {...field}
                 {...props}
             >
