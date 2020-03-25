@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
+import * as Yup from "yup";
 import {
     makeStyles,
     Theme,
@@ -40,6 +41,7 @@ import { GET_PRODUCTS } from "../queries";
 import Loading from "../../../components/loading/Loading";
 import { toast } from "react-toastify";
 import { EnumToArray, formatPrice, getTotal } from "../../../utilities";
+import actionTypes from "../../../actions/actionTypes";
 
 interface IFormValues {
     name: string
@@ -76,6 +78,17 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
+const validationSchema = Yup.object({
+    name: Yup.string().required(),
+    phone: Yup.string().required(),
+    email: Yup.string().required(),
+    street: Yup.string().required(),
+    city: Yup.string().required(),
+    state: Yup.string().required(),
+    zip: Yup.string().required(),
+    addressCategory: Yup.string().required()
+});
+
 const initialValues: IFormValues = {
     name: '',
     phone: '',
@@ -91,7 +104,7 @@ const initialValues: IFormValues = {
 const Checkout: React.FC<{}> = () => {
 
     const classes = useStyles();
-    const { items } = useContext(CartContext);
+    const { items, dispatch } = useContext(CartContext);
     const { loading, error, data } = useQuery<{ Product: IProduct[] }>(GET_PRODUCTS);
 
     const [redirect, setRedirect] = useState<undefined | string>(
@@ -167,10 +180,10 @@ const Checkout: React.FC<{}> = () => {
         await addCustomerAddressCustomer({
             variables: {
                 from: {
-                    id: createdCustomerAddress.id
+                    id: createdCustomer.id
                 },
                 to: {
-                    id: createdCustomer.id
+                    id: createdCustomerAddress.id
                 }
             }
         });
@@ -195,7 +208,7 @@ const Checkout: React.FC<{}> = () => {
         // Using a combination of map and filter now but with large amounts
         // of data plain old `for` loop would be more effective
         const orderItemsToCreate = items.map(item => {
-            const product = products.find(product => product.id = item.id);
+            const product = products.find(product => product.id === item.id);
             // May not find a product if it was deleted from DB
             if (!product) {
                 return undefined;
@@ -245,15 +258,20 @@ const Checkout: React.FC<{}> = () => {
         addCustomerOrders({
             variables: addCustomerOrdersVariables
         });
+
+        return createdOrder;
     };
 
     const onSubmit = async (values: IFormValues) => {
         try {
-            await commitOrder(values, items, products);
-            await authDb.bulkRemove(items.map(item => item.id));
             // TODO: Here I also could return the new user address and save it
             // in the IndexedDB for future orders' automatic suggestion
-            setRedirect('/order-confirmation');
+            const createdOrder = await commitOrder(values, items, products);
+            // Remove cart from DB
+            await authDb.bulkRemove(items.map(item => item.id));
+            // Remove cart from context
+            dispatch({type: actionTypes.REMOVE_ALL_ITEMS});
+            setRedirect(`/order-confirmation/${createdOrder.id}`);
         } catch (e) {
             const message = 'Oops! Something went wrong!';
             return toast(message, {
@@ -372,112 +390,116 @@ const Checkout: React.FC<{}> = () => {
                 <Grid item>
                     <Formik
                         initialValues={initialValues}
+                        validationSchema={validationSchema}
                         onSubmit={onSubmit}
                     >
                         {
-                            ({ values, errors }) => (
-                                <Form>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12}>
-                                            <Typography variant="h5"
-                                                        color="primary">
-                                                Customer details
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="name"
-                                                control={TextField}
-                                                placeholder="Full name"
-                                                autoFocus={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="email"
-                                                control={TextField}
-                                                placeholder="Email"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                control={MaskedPhoneInput}
-                                                name="phone"
-                                                label="Phone"
-                                                id="phone-input-mask"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="h5"
-                                                        color="primary">
-                                                Delivery address
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="street"
-                                                control={TextField}
-                                                placeholder="Street"
-                                                autoFocus={true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="city"
-                                                control={TextField}
-                                                placeholder="City"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="state"
-                                                control={TextField}
-                                                placeholder="State"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="zip"
-                                                control={TextField}
-                                                placeholder="Zip code"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="h5"
-                                                        color="primary">
-                                                Order details
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="addressCategory"
-                                                control={Select}
-                                                select={true}
-                                                selectOptions={addressCategoriesSelectItems}
-                                                placeholder="Order details"
-                                            />
-                                        </Grid>
+                            ({dirty, isValid}) => {
+                                const isFormValid = dirty && isValid;
+                                return (
+                                    <Form>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12}>
+                                                <Typography variant="h5"
+                                                            color="primary">
+                                                    Customer details
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="name"
+                                                    control={TextField}
+                                                    placeholder="Full name"
+                                                    autoFocus={true}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="email"
+                                                    control={TextField}
+                                                    placeholder="Email"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    control={MaskedPhoneInput}
+                                                    name="phone"
+                                                    label="Phone"
+                                                    id="phone-input-mask"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Typography variant="h5"
+                                                            color="primary">
+                                                    Delivery address
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="street"
+                                                    control={TextField}
+                                                    placeholder="Street"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="city"
+                                                    control={TextField}
+                                                    placeholder="City"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="state"
+                                                    control={TextField}
+                                                    placeholder="State"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="zip"
+                                                    control={TextField}
+                                                    placeholder="Zip code"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Typography variant="h5"
+                                                            color="primary">
+                                                    Order details
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="addressCategory"
+                                                    control={Select}
+                                                    select={true}
+                                                    selectOptions={addressCategoriesSelectItems}
+                                                    placeholder="Order details"
+                                                />
+                                            </Grid>
 
-                                        <Grid item xs={12}>
-                                            <FormField
-                                                name="details"
-                                                multiline
-                                                control={TextField}
-                                                placeholder="Order details"
-                                            />
+                                            <Grid item xs={12}>
+                                                <FormField
+                                                    name="details"
+                                                    multiline
+                                                    control={TextField}
+                                                    placeholder="Order details"
+                                                />
+                                            </Grid>
+                                            <Grid item>
+                                                <Button
+                                                    disabled={!isFormValid}
+                                                    color="primary"
+                                                    type="submit"
+                                                    variant="contained"
+                                                >
+                                                    Confirm your order
+                                                </Button>
+                                            </Grid>
                                         </Grid>
-                                        <Grid item>
-                                            <Button
-                                                color="primary"
-                                                type="submit"
-                                                variant="contained"
-                                            >
-                                                Confirm your order
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                </Form>
-                            )
+                                    </Form>
+                                );
+                            }
                         }
                     </Formik>
                 </Grid>

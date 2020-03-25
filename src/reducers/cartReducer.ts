@@ -37,7 +37,7 @@ export default function cartReducer(
 			);
 			state.items.splice(removeItemIndex, 1);
 			return { ...state, items: [...state.items] };
-		case actionTypes.REMOVE_ITEMS:
+		case actionTypes.REMOVE_ALL_ITEMS:
 			return { ...state, items: [] };
 		default:
 			return state;

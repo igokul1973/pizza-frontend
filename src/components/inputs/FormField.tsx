@@ -40,6 +40,7 @@ const FormField: React.FC<TProps> = ({
             className={clsx(classes.input, inputClass)}
             defaultValue={props.defaultValue}
             helperText={errorText || helperText}
+            error={errorText}
             InputLabelProps={{
                 className: classes.label
             }}

@@ -36,6 +36,7 @@ const FrontContent: React.FC<{}> = () => {
                 <Route path='/contact' component={Contact} />
                 <Route path='/shopping-cart' component={ShoppingCart} />
                 <Route path='/checkout' component={Checkout} />
+                <Route path='/order-confirmation/:id' component={OrderConfirmation} />
                 <Route path='/order-confirmation' component={OrderConfirmation} />
                 <Route path='/login' component={LoginForm} />
                 <Route component={NotFound} />

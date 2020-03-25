@@ -93,6 +93,7 @@ export const CREATE_ORDER_ITEM = gql`
             productId: $productId
         ) {
             id
+            total
         }
     }
 `;
