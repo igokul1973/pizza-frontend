@@ -1,21 +1,22 @@
-# GRANDstack Starter - UI
+# Pizza App - UI
 
 This directory contains a React app (bootstrapped with Create React App) that uses Apollo Client to query a GraphQL API.
 
-The template app queries for a list of users from the GraphQL API and displays them in a list.
+This app is a result of a 1-week test assignment I made for one of the companies. It represents a Pizza store where a user can make an order. 
+This app is hosted at Heroku at https://pizza-delivery-business-app.herokuapp.com
 
 ## Quickstart
 
 Install dependencies:
 
 ```
-npm install
+yarn install
 ```
 
 Start the development server:
 
 ```
-npm start
+yarn start
 ```
 
 This will serve the app on `http://localhost:3000`
@@ -40,29 +41,13 @@ Be sure you've [deployed the GraphQL Service](../api#deployment) and have the UR
 
 ### Configure
 
-Create `.env.production` to override `.env` used for local development. For example if you've already deployed the GraphQL service, specify the GraphQL service URI in `.env.production`.
-
-To take advantage of Zeit Now's free hosting tier you'll need to disable source maps (becuase the source map file size exceeds the maximum 1M for Now's free tier). Add `GENERATE_SOURCEMAP=false` to `.env.production`.
-
-So your `.env.production` should look like this (replacing your own GraphQL API URI):
-
-_.env.production_
+The app has been configured for deployment on Heroku - see the file .env.production.
+Change the variables to your liking when you're deploying some place else.
 
 ```
-REACT_APP_GRAPHQL_URI=https://grand-stack-starter-api-pqdeodpvok.now.sh
+REACT_APP_PROXY=https://pizza-delivery-business-back.herokuapp.com/graphql
 GENERATE_SOURCEMAP=false
 ```
-
-### Deploy With Zeit Now
-
-To use [Zeit Now](https://zeit.co/now) you'll need to download Zeit Desktop if you haven't already. And then run:
-
-```
-now
-```
-
-this will deploy your React app to Zeit Now and give you a unqiue URL for your app. For example: https://grand-stack-starter-ui-pwntmhvvwr.now.sh
-
 ## Material-UI
 
 [Material-UI](https://material-ui.com/) components are included. See [the docs](https://material-ui.com/getting-started/usage/) for an overview of the components included. This starter example makes use of the Material-UI data Table (and related) components.
@@ -80,10 +65,10 @@ You can find the most recent version of this guide [here](https://github.com/fac
 -   [Sending Feedback](#sending-feedback)
 -   [Folder Structure](#folder-structure)
 -   [Available Scripts](#available-scripts)
-    -   [npm start](#npm-start)
-    -   [npm test](#npm-test)
-    -   [npm run build](#npm-run-build)
-    -   [npm run eject](#npm-run-eject)
+    -   [yarn start](#yarn-start)
+    -   [yarn test](#yarn-test)
+    -   [yarn run build](#yarn-run-build)
+    -   [yarn run eject](#yarn-run-eject)
 -   [Supported Browsers](#supported-browsers)
 -   [Supported Language Features and Polyfills](#supported-language-features-and-polyfills)
 -   [Syntax Highlighting in the Editor](#syntax-highlighting-in-the-editor)
