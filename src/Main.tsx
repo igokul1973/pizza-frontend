@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import Front from "./front/Front";
 import { Route, Switch } from "react-router";
 import Loading from './components/loading/Loading';
-import authDb from './indexedDb';
+import db from './indexedDb';
 import actionTypes from './actions/actionTypes';
 import { CartContext } from './context/cartContext';
 
@@ -11,10 +11,14 @@ const Main: React.FC<{}> = () => {
     const { dispatch } = useContext(CartContext);
     const [loading, setLoading] = useState<boolean>(true);
 
+    // Add shopping cart items from IndexedDB back to context
+    // in case the user already started shopping but reloaded page...
     useEffect(() => {
-        authDb.getAll()
+        db.getAll()
             .then(items => {
-                dispatch({ type: actionTypes.SEED_CART, payload: { items } });
+                if (items.length) {
+                    dispatch({ type: actionTypes.SEED_CART, payload: { items } });
+                }
             })
             .catch(e => {
                 console.error(e)
@@ -35,6 +39,6 @@ const Main: React.FC<{}> = () => {
             <Route path='/' component={Front} />
         </Switch>
     )
-}
+};
 
 export default Main;

@@ -20,7 +20,7 @@ import MaskedPhoneInput from "../../../components/phone/MaskedPhoneInput";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import ICustomer from "../../../interfaces/ICustomer";
 import IOrder, { OrderStatusEnum } from "../../../interfaces/IOrder";
-import authDb, { IItem } from "../../../indexedDb";
+import db, { IItem } from "../../../indexedDb";
 import ICustomerAddress from "../../../interfaces/ICustomerAddress";
 import IOrderItem from "../../../interfaces/IOrderItem";
 import {
@@ -268,7 +268,7 @@ const Checkout: React.FC<{}> = () => {
             // in the IndexedDB for future orders' automatic suggestion
             const createdOrder = await commitOrder(values, items, products);
             // Remove cart from DB
-            await authDb.bulkRemove(items.map(item => item.id));
+            await db.bulkRemove(items.map(item => item.id));
             // Remove cart from context
             dispatch({type: actionTypes.REMOVE_ALL_ITEMS});
             setRedirect(`/order-confirmation/${createdOrder.id}`);

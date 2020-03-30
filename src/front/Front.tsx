@@ -6,7 +6,7 @@ import FrontFooter from "./footer/FrontFooter";
 class Front extends Component<any, any> {
     render() {
         return (
-            <div className="Front">
+            <div className="Front" data-testid="front-component">
                 <FrontHeader />
                 <FrontContent />
                 <FrontFooter />

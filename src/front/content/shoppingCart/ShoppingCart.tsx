@@ -28,7 +28,7 @@ import HeaderTitle from '../headerTitle/headerTitle';
 import Loading from '../../../components/loading/Loading';
 import { formatPrice, getTotal } from '../../../utilities';
 import { CartContext } from '../../../context/cartContext';
-import authDb from '../../../indexedDb';
+import db from '../../../indexedDb';
 import actionTypes from '../../../actions/actionTypes';
 import Link from '../../../components/link/Link';
 import { toast } from "react-toastify";
@@ -153,7 +153,7 @@ const ShoppingCart: React.FC<{}> = () => {
             return product;
         })
             .filter(updatedItem => updatedItem !== undefined) as IItem[];*/
-        authDb.insert(id, quantity)
+        db.insert(id, quantity)
             .then(_ => {
                 // itemsToUpdate.forEach((item) => {
                 dispatch({
@@ -168,7 +168,7 @@ const ShoppingCart: React.FC<{}> = () => {
     };
 
     const deleteCartItem = (id: string) => {
-        authDb.remove(id)
+        db.remove(id)
             .then(items => {
                 dispatch({ type: actionTypes.REMOVE_ITEM, payload: { id } });
             })

@@ -32,6 +32,18 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+export const getGalleryItems = (products: IProduct[]) => {
+    return products.map((item, index) => {
+        return { src: item.imgUrl, index };
+    });
+};
+
+const getRandomImageUrlByCategory = (products: IProduct[], category: string) => {
+    const filteredItems = products.filter(item => item.categories.some((cat) => cat.name === category));
+    const randomNumber = Math.floor(Math.random() * filteredItems.length);
+    return filteredItems[randomNumber].imgUrl;
+};
+
 const Home: React.FC<{}> = () => {
 
     const theme = useTheme();
@@ -51,23 +63,11 @@ const Home: React.FC<{}> = () => {
         );
     }
 
-    const getGalleryItems = (products: IProduct[]) => {
-        return products.map((item, index) => {
-            return { src: item.imgUrl, index };
-        });
-    };
-
-    const getRandomImageUrlByCategory = (products: IProduct[], category: string) => {
-        const filteredItems = products.filter(item => item.categories.some((cat) => cat.name === category));
-        const randomNumber = Math.floor(Math.random() * filteredItems.length);
-        return filteredItems[randomNumber].imgUrl;
-    };
-
     return (
-        <div className="home-component">
-            <div className={classes.gallery}>
+        <div data-testid="home-component">
+            <div className={classes.gallery} data-testid="gallery">
                 <Link to="/menu">
-                    <ImageGallery galleryItems={getGalleryItems(data!.Product)} />
+                    <ImageGallery data-testid="gallery" galleryItems={getGalleryItems(data!.Product)} />
                 </Link>
             </div>
             <Grid
@@ -104,7 +104,10 @@ const Home: React.FC<{}> = () => {
             >
                 <Grid item className={classes.imgRoot}>
                     <Link to="/menu">
-                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'pizza')} />
+                        <img className={classes.img}
+                             alt="Random pizza"
+                             src={getRandomImageUrlByCategory(data!.Product, 'pizza')}
+                        />
                     </Link>
                 </Grid>
                 <Grid item>
@@ -114,7 +117,10 @@ const Home: React.FC<{}> = () => {
                 </Grid>
                 <Grid item className={classes.imgRoot}>
                     <Link to="/menu">
-                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'pizza')} />
+                        <img className={classes.img}
+                             alt="Random pizza"
+                             src={getRandomImageUrlByCategory(data!.Product, 'pizza')}
+                        />
                     </Link>
                 </Grid>
                 <Grid item >
@@ -124,7 +130,10 @@ const Home: React.FC<{}> = () => {
                 </Grid>
                 <Grid item className={classes.imgRoot}>
                     <Link to="/menu">
-                        <img className={classes.img} alt="" src={getRandomImageUrlByCategory(data!.Product, 'soft drink')} />
+                        <img className={classes.img}
+                             alt="Random drink"
+                             src={getRandomImageUrlByCategory(data!.Product, 'soft drink')}
+                        />
                     </Link>
                 </Grid>
             </Grid>

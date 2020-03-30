@@ -7,6 +7,7 @@ import baseTheme from './baseTheme';
 import { ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from "@material-ui/core";
 import { CartContextProvider } from './context/cartContext';
+import ErrorBoundary from "./components/errorBoundary/ErrorBoundary";
 
 interface IProps {
     client: ApolloClient<any>
@@ -15,16 +16,18 @@ interface IProps {
 const App: React.FC<IProps> = ({ client }) => {
 
     return (
-        <ApolloProvider client={client}>
-            <BrowserRouter>
-                <ThemeProvider theme={baseTheme}>
-                    <CartContextProvider>
-                        <CssBaseline />
-                        <Main />
-                    </CartContextProvider>
-                </ThemeProvider>
-            </BrowserRouter>
-        </ApolloProvider >
+        <ErrorBoundary>
+            <ApolloProvider client={client}>
+                <BrowserRouter>
+                    <ThemeProvider theme={baseTheme}>
+                        <CartContextProvider>
+                            <CssBaseline />
+                            <Main />
+                        </CartContextProvider>
+                    </ThemeProvider>
+                </BrowserRouter>
+            </ApolloProvider >
+        </ErrorBoundary>
     );
 }
 

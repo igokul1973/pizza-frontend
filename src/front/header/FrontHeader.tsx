@@ -237,7 +237,7 @@ const DashboardHeader: React.FC<{}> = () => {
     );
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} data-testid="front-header-component">
             <AppBar
                 component="nav"
                 position="fixed"

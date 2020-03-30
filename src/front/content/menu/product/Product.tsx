@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams } from 'react-router';
 import clsx from 'clsx';
 import HeaderTitle from '../../headerTitle/headerTitle';
 import Loading from '../../../../components/loading/Loading';
@@ -8,8 +8,8 @@ import { GET_PRODUCTS, TGetProductVariables } from '../../queries';
 import IProduct from '../../../../interfaces/IProduct';
 import { Grid, Typography, TextField, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import authDb from '../../../../indexedDb/index';
-import { CartContext } from '../../../../context/cartContext';
+import db from '../../../../indexedDb/index';
+import { useCartContext } from '../../../../context/cartContext';
 import actionTypes from '../../../../actions/actionTypes';
 import {toast} from "react-toastify";
 import { formatPrice } from "../../../../utilities";
@@ -41,7 +41,7 @@ const Product: React.FC<{}> = () => {
     const isLargerThanMd = useMediaQuery(theme.breakpoints.up('md'));
     const { id } = useParams<{ id: string }>();
     const [quantity, setQuantity] = useState<number|"">(1);
-    const { dispatch } = useContext(CartContext);
+    const { dispatch } = useCartContext();
     const { loading, error, data } = useQuery<{ Product: IProduct[] }, TGetProductVariables>(
         GET_PRODUCTS,
         { variables: { id } }
@@ -61,6 +61,14 @@ const Product: React.FC<{}> = () => {
 
     const product = data!.Product[0];
 
+    if (!product) {
+        return (
+            <HeaderTitle isError={true}>
+                There is no products with given ID
+            </HeaderTitle>
+        );
+    }
+
     const changeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
         setQuantity(+event.target.value);
     };
@@ -73,12 +81,12 @@ const Product: React.FC<{}> = () => {
                 position: toast.POSITION.TOP_CENTER
             });
         }
-        const item = await authDb.get(id);
+        const item = await db.get(id);
         let dbQuantity = quantity;
         if (item) {
             dbQuantity = quantity + item.quantity;
         }
-        authDb.insert(id, dbQuantity)
+        db.insert(id, dbQuantity)
             .then(res => {
                 dispatch({ type: actionTypes.ADD_ITEM, payload: { item: { id, quantity } } });
                 const message = 'Item added to cart';
@@ -93,7 +101,7 @@ const Product: React.FC<{}> = () => {
     };
 
     return (
-        <>
+        <div data-testid="product-component">
             <HeaderTitle>
                 {product.name}
             </HeaderTitle>
@@ -197,6 +205,7 @@ const Product: React.FC<{}> = () => {
                         </Grid>
                         <Grid item>
                             <Button
+                                data-testid="add-to-cart-button"
                                 variant="contained"
                                 size="large"
                                 color="secondary"
@@ -208,7 +217,7 @@ const Product: React.FC<{}> = () => {
                     </Grid>
                 </Grid>
             </Grid>
-        </>
+        </div>
     )
 };
 

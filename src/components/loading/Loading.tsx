@@ -4,9 +4,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
     loading: {
-        display: 'flex',
         height: '100vh',
-        margin: '20% 0'
     }
 }));
 
@@ -14,12 +12,14 @@ const Loading: React.FC<{}> = () => {
 
     const classes = useStyles();
     return (
-        <div className={classes.loading}>
             <Grid
                 container
                 direction="column"
                 alignItems="center"
+                justify="center"
                 spacing={4}
+                role="loading-alert"
+                className={classes.loading}
             >
                 <Grid item>
                     <Typography>
@@ -30,7 +30,6 @@ const Loading: React.FC<{}> = () => {
                     <CircularProgress size={80} />
                 </Grid>
             </Grid>
-        </div>
     );
 };
 

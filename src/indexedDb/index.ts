@@ -20,7 +20,7 @@ class IndexedDb extends Dexie {
 	 * Get all shopping cart items.
 	 * return {Promise<IItem[]>}
 	 */
-	get(id: string): Promise<IItem> {
+	get(id: string): Promise<IItem|undefined> {
 		return this.items.get(id);
 	}
 
@@ -69,6 +69,6 @@ class IndexedDb extends Dexie {
 	}
 }
 
-const authDb = new IndexedDb();
+const db = new IndexedDb();
 
-export default authDb;
+export default db;
