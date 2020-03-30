@@ -7,15 +7,11 @@ import router from 'react-router';
 import db from "../../../../indexedDb";
 import { waitFor } from "@testing-library/dom";
 import * as CartContext from "../../../../context/cartContext";
-import IAction from "../../../../interfaces/IAction";
-import ICartState from "../../../../interfaces/ICartState";
-
-// `mocked` provides typings on mocked modules and their methods
-const mockedDb = mocked(db);
 
 afterEach(() => {
     cleanup();
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     jest.restoreAllMocks();
 });
 
@@ -27,7 +23,7 @@ describe('Product page - success', () => {
         jest.spyOn(router, 'useParams').mockReturnValue({ id });
         // Spying on CartContext calls and mocking its dispatch function
         const dispatchMock = jest.fn();
-        const cartContextSpy = jest.spyOn(CartContext, 'useCartContext').mockImplementation(() => ({
+        jest.spyOn(CartContext, 'useCartContext').mockImplementation(() => ({
             items: [],
             dispatch: dispatchMock
         }));
