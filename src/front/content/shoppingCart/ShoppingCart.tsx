@@ -27,7 +27,7 @@ import {
 import HeaderTitle from '../headerTitle/headerTitle';
 import Loading from '../../../components/loading/Loading';
 import { formatPrice, getTotal } from '../../../utilities';
-import { CartContext } from '../../../context/cartContext';
+import { CartContext, useCartContext } from '../../../context/cartContext';
 import db from '../../../indexedDb';
 import actionTypes from '../../../actions/actionTypes';
 import Link from '../../../components/link/Link';
@@ -87,7 +87,7 @@ const ShoppingCart: React.FC<{}> = () => {
     const classes = useStyles();
     const theme = useTheme();
     const isLargerThanSm = useMediaQuery(theme.breakpoints.up('sm'));
-    const { items, dispatch } = useContext(CartContext);
+    const { items, dispatch } = useCartContext();
     const { loading, error, data } = useQuery<{ Product: IProduct[] }, TGetProductVariables>(
         GET_PRODUCTS,
         {
@@ -145,22 +145,12 @@ const ShoppingCart: React.FC<{}> = () => {
      * Updates items if their quantity has changed
      */
     const updateCartItemQuantity = async (id: string, quantity: number) => {
-        /*const itemsToUpdate = updatedItems.map((updatedItem) => {
-            const product = products.find(product => product.id === updatedItem.id);
-            if (product) {
-                return { ...product, quantity: updatedItem.quantity };
-            }
-            return product;
-        })
-            .filter(updatedItem => updatedItem !== undefined) as IItem[];*/
         db.insert(id, quantity)
             .then(_ => {
-                // itemsToUpdate.forEach((item) => {
                 dispatch({
                     type: actionTypes.UPDATE_ITEM_QUANTITY,
                     payload: { item: { id, quantity } }
                 });
-                // })
             })
             .catch(e => {
                 console.error(e);
@@ -169,7 +159,7 @@ const ShoppingCart: React.FC<{}> = () => {
 
     const deleteCartItem = (id: string) => {
         db.remove(id)
-            .then(items => {
+            .then(_ => {
                 dispatch({ type: actionTypes.REMOVE_ITEM, payload: { id } });
             })
             .catch(e => {
@@ -243,6 +233,7 @@ const ShoppingCart: React.FC<{}> = () => {
                                     align="center">{formatPrice(price * quantity)}</TableCell>
                                 <TableCell align="center">
                                     <DeleteIcon
+                                        titleAccess="Delete button"
                                         color="error"
                                         onClick={() => deleteCartItem(id)}
                                         className={classes.deleteIcon}
@@ -294,6 +285,7 @@ const ShoppingCart: React.FC<{}> = () => {
                                     </TableCell>
                                     <TableCell align="right">
                                         <DeleteIcon
+                                            titleAccess="Delete button"
                                             color="error"
                                             onClick={() => deleteCartItem(id)}
                                             className={classes.deleteIcon}

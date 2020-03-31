@@ -39,6 +39,7 @@
 		"@testing-library/jest-dom": "^5.3.0",
 		"@testing-library/react": "^10.0.1",
 		"@testing-library/user-event": "^10.0.1",
+		"@types/css-mediaquery": "^0.1.0",
 		"@types/jest": "^24.0.0",
 		"@types/lodash": "^4.14.149",
 		"@types/node": "^12.0.0",
@@ -48,6 +49,7 @@
 		"@types/react-router-dom": "^5.1.2",
 		"@types/react-slick": "^0.23.4",
 		"@types/yup": "^0.26.33",
+		"css-mediaquery": "^0.1.2",
 		"mock-apollo-client": "^0.3.0",
 		"ts-jest": "^25.2.1"
 	},

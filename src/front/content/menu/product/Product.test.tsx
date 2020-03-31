@@ -2,7 +2,6 @@ import React, { Consumer, Context, useContext } from 'react';
 import { cleanup, fireEvent } from '@testing-library/react';
 import Product from './Product';
 import { renderComponent } from "../../../../tests/utilities";
-import { mocked } from "ts-jest/utils";
 import router from 'react-router';
 import db from "../../../../indexedDb";
 import { waitFor } from "@testing-library/dom";
@@ -11,7 +10,6 @@ import * as CartContext from "../../../../context/cartContext";
 afterEach(() => {
     cleanup();
     jest.clearAllMocks();
-    jest.restoreAllMocks();
     jest.restoreAllMocks();
 });
 

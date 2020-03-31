@@ -147,6 +147,45 @@ export const getProductsMocks = (): MockedResponse[] => [
     {
         request: {
             query: GET_PRODUCTS,
+            variables: {
+                filter: {
+                    AND: [
+                        { id_in: ['p1', 'p3'] },
+                        { status: "available" }
+                    ]
+                }
+            }
+        },
+        result: {
+            data: {
+                Product: [
+                ...getProduct('p1'),
+                ...getProduct('p3')
+                ]
+            }
+        }
+    },
+    {
+        request: {
+            query: GET_PRODUCTS,
+            variables: {
+                filter: {
+                    AND: [
+                        { id_in: [] },
+                        { status: "available" }
+                    ]
+                }
+            }
+        },
+        result: {
+            data: {
+                Product: []
+            }
+        }
+    },
+    {
+        request: {
+            query: GET_PRODUCTS,
             variables: { id: 'p4' }
         },
         result: {

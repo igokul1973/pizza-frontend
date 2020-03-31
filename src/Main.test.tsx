@@ -1,7 +1,6 @@
 import React from 'react';
 import { mocked } from "ts-jest/utils";
-import { cleanup, prettyDOM } from '@testing-library/react';
-import { waitFor } from '@testing-library/dom';
+import { cleanup } from '@testing-library/react';
 import db, { IItem } from "./indexedDb";
 import { renderComponent } from "./tests/utilities";
 import Main from "./Main";
